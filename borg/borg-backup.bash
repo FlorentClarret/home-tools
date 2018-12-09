@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source ../utils/logger.bash;
+source "${BASH_SOURCE%/*}/../utils/logger.bash";
 
 usage() {
   echo "./borg-backup.bash: "
