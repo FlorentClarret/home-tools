@@ -59,7 +59,7 @@ prune() {
     info "${backup_name} - End pruning"
 }
 
-CONFIGURATION_FILE="~/.config/borg-backup.conf"
+CONFIGURATION_FILE="${HOME}/.config/borg-backup.conf"
 
 POSITIONAL=();
 while [[ $# -gt 0 ]]; do
