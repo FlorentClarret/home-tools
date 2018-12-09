@@ -8,6 +8,7 @@ usage() {
   echo
   echo "Parameters: "
   echo -e "\t-c|--configuration : specify the configuration file"
+  echo -e "\t-n|--name : specify which backup should be done"
   echo -e "\t-h|--help : Show this usage"
   echo
   echo "Configuration file format : "
@@ -27,7 +28,7 @@ init_repo() {
 
 backup() {
 
-    info "${backup_name} - Start backup"
+    info "${current_backup} - Start backup"
 
     borg create \
         --verbose \
@@ -35,37 +36,40 @@ backup() {
         --compression lzma,9 \
         --exclude-caches \
         --exclude .sync \
-        ${destination_folder}::"${backup_name}-{now}" \
+        ${destination_folder}::"${current_backup}-{now}" \
         ${source_folder};
 
-    info "${backup_name} - End backup"
+    info "${current_backup} - End backup"
 }
 
 prune() {
 
-    info "${backup_name} - Start pruning"
+    info "${current_backup} - Start pruning"
 
     borg prune \
         --verbose \
         --stats \
         --list \
-        --prefix "${backup_name}-" \
+        --prefix "${current_backup}-" \
         --keep-hourly 12 \
         --keep-daily 60 \
         --keep-monthly 12 \
         --keep-yearly 3 \
         ${destination_folder};
 
-    info "${backup_name} - End pruning"
+    info "${current_backup} - End pruning"
 }
 
 CONFIGURATION_FILE="${HOME}/.config/borg-backup.conf"
+BACKUP_NAME="*"
 
 POSITIONAL=();
 while [[ $# -gt 0 ]]; do
     case ${1} in
         -c|--configuration)
             CONFIGURATION_FILE=${2}; shift; shift;;
+        -n|--name)
+            BACKUP_NAME=${2}; shift; shift;;
         -h|--help)
             usage; exit 0;;
         *)
@@ -80,26 +84,29 @@ if [[ ! -f ${CONFIGURATION_FILE} ]]; then
 fi
 
 grep -v '^$\|^\s*\#' ${CONFIGURATION_FILE} | while read current_line; do
-    backup_name=$(echo ${current_line} | cut -f1 -d',');
+    current_backup=$(echo ${current_line} | cut -f1 -d',');
     source_folder=$(echo ${current_line} | cut -f2 -d',');
     destination_folder=$(echo ${current_line} | cut -f3 -d',');
 
-    info "${backup_name} - Start"
+    info "${current_backup} - Start"
 
-    if [[ ! -d "${source_folder}" ]]; then
-        error "Source folder ${source_folder} is unknown";
-        exit 1;
+    if [[ ${BACKUP_NAME} != "*" ]] && [[ ${BACKUP_NAME} != "${current_backup}" ]]; then
+        info "${current_backup} - Skipped"
+    else
+        if [[ ! -d "${source_folder}" ]]; then
+            error "Source folder ${source_folder} is unknown";
+            exit 1;
+        fi
+
+        if [[ ! -d "${source_folder}" ]]; then
+            info "Creating destination folder ${destination_folder}";
+            mkdir -p ${destination_folder};
+        fi
+
+        init_repo;
+        backup;
+        prune;
     fi
 
-    if [[ ! -d "${source_folder}" ]]; then
-        info "Creating destination folder ${destination_folder}";
-        mkdir -p ${destination_folder};
-    fi
-
-    init_repo;
-    backup;
-    prune;
-
-    info "${backup_name} - End"
-
+    info "${current_backup} - End"
 done
