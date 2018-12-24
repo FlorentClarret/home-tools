@@ -98,7 +98,7 @@ grep -v '^$\|^\s*\#' ${CONFIGURATION_FILE} | while read current_line; do
             exit 1;
         fi
 
-        if [[ ! -d "${source_folder}" ]]; then
+        if [[ ! -d "${destination_folder}" ]]; then
             info "Creating destination folder ${destination_folder}";
             mkdir -p ${destination_folder};
         fi
