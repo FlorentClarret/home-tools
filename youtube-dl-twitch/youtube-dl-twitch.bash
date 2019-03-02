@@ -55,7 +55,6 @@ grep -v '^$\|^\s*\#' ${CONFIGURATION_FILE} | while read current_line; do
     fi
 
     youtube-dl --download-archive ${destination_folder}/.archive \
-        -s \
         --no-progress \
         -r ${RATE} \
         -o "${destination_folder}/${channel_name}%(uploader)s - %(upload_date)s - %(id)s.%(ext)s" \
