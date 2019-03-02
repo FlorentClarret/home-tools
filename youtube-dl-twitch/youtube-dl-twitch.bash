@@ -43,23 +43,25 @@ if [[ ! -f ${CONFIGURATION_FILE} ]]; then
 fi
 
 grep -v '^$\|^\s*\#' ${CONFIGURATION_FILE} | while read current_line; do
-    channel_url=$(echo ${current_line} | cut -f1 -d',');
-    destination_folder=$(echo ${current_line} | cut -f2 -d',');
+    channel_name=$(echo ${current_line} | cut -f1 -d',');
+    channel_url=$(echo ${current_line} | cut -f2 -d',');
+    destination_folder=$(echo ${current_line} | cut -f3 -d',');
 
-    info "${channel_url} - Start"
+    info "${channel_name} - Start"
 
-    if [[ ! -d "${destination_folder}" ]]; then
-        info "Creating destination folder ${destination_folder}";
-        mkdir -p ${destination_folder};
+    if [[ ! -d "${destination_folder}/${channel_name}" ]]; then
+        info "Creating destination folder ${destination_folder}/${channel_name}";
+        mkdir -p "${destination_folder}/${channel_name}";
     fi
 
     youtube-dl --download-archive ${destination_folder}/.archive \
+        -s \
         --no-progress \
         -r ${RATE} \
-        -o "${destination_folder}/%(uploader)s - %(upload_date)s - %(id)s.%(ext)s" \
+        -o "${destination_folder}/${channel_name}%(uploader)s - %(upload_date)s - %(id)s.%(ext)s" \
         --playlist-end ${MAX_VIDEOS} \
         -f 'bestvideo[height<=480]+bestaudio/best[height<=480]' \
         ${channel_url}
 
-    info "${channel_url} - End"
+    info "${channel_name} - End"
 done
