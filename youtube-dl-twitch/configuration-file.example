@@ -1,0 +1,8 @@
+# youtube-dl-twitc.sh configuration file (example)
+# Format :
+# channelUrl,destinationFolder
+
+https://www.twitch.tv/drdisrespect/videos/all,./drdisrespect/
+https://www.twitch.tv/shroud/videos/all,./shroud/
+
+# End of file
