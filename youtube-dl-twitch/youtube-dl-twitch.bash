@@ -57,7 +57,7 @@ grep -v '^$\|^\s*\#' ${CONFIGURATION_FILE} | while read current_line; do
     youtube-dl --download-archive ${destination_folder}/.archive \
         --no-progress \
         -r ${RATE} \
-        -o "${destination_folder}/${channel_name}%(uploader)s - %(upload_date)s - %(id)s.%(ext)s" \
+        -o "${destination_folder}/${channel_name}/%(uploader)s - %(upload_date)s - %(id)s.%(ext)s" \
         --playlist-end ${MAX_VIDEOS} \
         -f 'bestvideo[height<=480]+bestaudio/best[height<=480]' \
         ${channel_url}
