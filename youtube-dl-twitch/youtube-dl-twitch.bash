@@ -62,5 +62,9 @@ grep -v '^$\|^\s*\#' ${CONFIGURATION_FILE} | while read current_line; do
         -f 'bestvideo[height<=480]+bestaudio/best[height<=480]' \
         ${channel_url}
 
+    info "${channel_name} - Remove old file"
+
+    find "${destination_folder}/${channel_name}/*" -mtime "+30" -exec rm {} \;
+
     info "${channel_name} - End"
 done
