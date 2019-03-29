@@ -54,7 +54,7 @@ grep -v '^$\|^\s*\#' ${CONFIGURATION_FILE} | while read current_line; do
         mkdir -p "${destination_folder}/${channel_name}";
     fi
 
-    youtube-dl --download-archive ${destination_folder}/.archive \
+    youtube-dl --download-archive ${destination_folder}/${channel_name}/.archive \
         --no-progress \
         -r ${RATE} \
         -o "${destination_folder}/${channel_name}/%(uploader)s - %(upload_date)s - %(id)s.%(ext)s" \
