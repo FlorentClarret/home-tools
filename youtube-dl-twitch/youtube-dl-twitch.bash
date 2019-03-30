@@ -19,7 +19,7 @@ usage() {
   echo -e "\t-h|--help : Show this usage"
   echo
   echo "Configuration file format : "
-  echo -e "\tchannelUrl,destinationFolder"
+  echo -e "\tchannelName,channelUrl,destinationFolder"
 }
 
 POSITIONAL=();
