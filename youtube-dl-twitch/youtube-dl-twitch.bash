@@ -2,23 +2,23 @@
 
 source "${BASH_SOURCE%/*}/../utils/logger.bash";
 
+CONFIGURATION_FILE="${HOME}/.config/youtube-dl-twitch.conf"
+RATE="300K"
+MAX_VIDEOS="10"
+
 usage() {
   echo "./youtube-dl-twitch.bash: "
-  echo -e "\tDownload the last 10 videos of each streamer"
+  echo -e "\tDownload latest videos from twitch"
   echo
   echo "Parameters: "
-  echo -e "\t-c|--configuration : specify the configuration file"
-  echo -e "\t-r|--rate : the maximum downloading rate (default 300K)"
-  echo -e "\t-m|--max : maximum number of video to download (default 10)"
+  echo -e "\t-c|--configuration : specify the configuration file (default $CONFIGURATION_FILE)"
+  echo -e "\t-r|--rate : the maximum downloading rate (default $RATE)"
+  echo -e "\t-m|--max : maximum number of video to download (default $MAX_VIDEOS)"
   echo -e "\t-h|--help : Show this usage"
   echo
   echo "Configuration file format : "
   echo -e "\tchannelUrl,destinationFolder"
 }
-
-CONFIGURATION_FILE="${HOME}/.config/youtube-dl-twitch.conf"
-RATE="300K"
-MAX_VIDEOS="10"
 
 POSITIONAL=();
 while [[ $# -gt 0 ]]; do
