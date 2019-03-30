@@ -5,6 +5,7 @@ source "${BASH_SOURCE%/*}/../utils/logger.bash";
 CONFIGURATION_FILE="${HOME}/.config/youtube-dl-twitch.conf"
 RATE="300K"
 MAX_VIDEOS="10"
+HISTORIC="60"
 
 usage() {
   echo "./youtube-dl-twitch.bash: "
@@ -14,6 +15,7 @@ usage() {
   echo -e "\t-c|--configuration : specify the configuration file (default $CONFIGURATION_FILE)"
   echo -e "\t-r|--rate : the maximum downloading rate (default $RATE)"
   echo -e "\t-m|--max : maximum number of video to download (default $MAX_VIDEOS)"
+  echo -e "\t-H|--historic : number of days to keep each video (default $HISTORIC)"
   echo -e "\t-h|--help : Show this usage"
   echo
   echo "Configuration file format : "
@@ -29,6 +31,8 @@ while [[ $# -gt 0 ]]; do
             RATE=${2}; shift; shift;;
         -m|--max)
             MAX_VIDEOS=${2}; shift; shift;;
+        -H|--historic)
+            HISTORIC=${2}; shift; shift;;
         -h|--help)
             usage; exit 0;;
         *)
@@ -64,7 +68,7 @@ grep -v '^$\|^\s*\#' ${CONFIGURATION_FILE} | while read current_line; do
 
     info "${channel_name} - Remove old file"
 
-    find "${destination_folder}/${channel_name}/*" -mtime "+30" -exec rm {} \;
+    find "${destination_folder}/${channel_name}/*" -mtime "+$HISTORIC" -exec rm {} \;
 
     info "${channel_name} - End"
 done
