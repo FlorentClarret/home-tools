@@ -1,0 +1,7 @@
+# youtube-dl-france-tv.sh configuration file (example)
+# Format :
+# showName,url,destinationFolder
+
+C Dans l'Air,france-5/c-dans-l-air/,./
+
+# End of file
