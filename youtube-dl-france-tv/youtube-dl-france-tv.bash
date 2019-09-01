@@ -66,7 +66,6 @@ grep -v '^$\|^\s*\#' ${CONFIGURATION_FILE} | while read current_line; do
         -o "${destination_folder}/${show_name}/${show_name} - %(upload_date)s - %(id)s.%(ext)s" \
         --playlist-end ${MAX_VIDEOS} \
         -f 'bestvideo[height<=480]+bestaudio/best[height<=480]' \
-        -s \
         "${url}"
     done
 
