@@ -5,7 +5,7 @@ source "${BASH_SOURCE%/*}/../utils/logger.bash";
 CONFIGURATION_FILE="${HOME}/.config/youtube-dl-twitch.conf"
 RATE="300K"
 MAX_VIDEOS="10"
-HISTORIC="60"
+HISTORIC="15"
 
 usage() {
   echo "./youtube-dl-twitch.bash: "
@@ -68,7 +68,7 @@ grep -v '^$\|^\s*\#' ${CONFIGURATION_FILE} | while read current_line; do
 
     info "${channel_name} - Remove old file"
 
-    find "${destination_folder}/${channel_name}/*" -mtime "+$HISTORIC" -exec rm {} \;
+    find "${destination_folder}/${channel_name}/" -mtime "+$HISTORIC" -exec rm {} \;
 
     info "${channel_name} - End"
 done
