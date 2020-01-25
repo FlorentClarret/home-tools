@@ -68,7 +68,7 @@ grep -v '^$\|^\s*\#' ${CONFIGURATION_FILE} | while read current_line; do
 
     info "${channel_name} - Remove old file"
 
-    find "${destination_folder}/${channel_name}/" -mtime "+$HISTORIC" -exec rm {} \;
+    find "${destination_folder}/${channel_name}/" -mtime "+$HISTORIC" -exec rm -f {} \;
 
     info "${channel_name} - End"
 done

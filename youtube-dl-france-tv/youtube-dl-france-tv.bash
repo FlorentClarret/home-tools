@@ -71,7 +71,7 @@ grep -v '^$\|^\s*\#' ${CONFIGURATION_FILE} | while read current_line; do
 
     info "${show_name} - Remove old files"
 
-    find "${destination_folder}/${show_name}/" -mtime "+$HISTORIC" -exec rm {} \;
+    find "${destination_folder}/${show_name}/" -mtime "+$HISTORIC" -exec rm -f {} \;
 
     info "${show_name} - End"
 done
