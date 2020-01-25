@@ -5,7 +5,7 @@ source "${BASH_SOURCE%/*}/../utils/logger.bash";
 CONFIGURATION_FILE="${HOME}/.config/youtube-dl-france-tv.conf"
 RATE="300K"
 MAX_VIDEOS="10"
-HISTORIC="60"
+HISTORIC="15"
 
 usage() {
   echo "./youtube-dl-france-tv.bash: "
@@ -71,7 +71,7 @@ grep -v '^$\|^\s*\#' ${CONFIGURATION_FILE} | while read current_line; do
 
     info "${show_name} - Remove old files"
 
-    find "${destination_folder}/${show_name}/*" -mtime "+$HISTORIC" -exec rm {} \;
+    find "${destination_folder}/${show_name}/" -mtime "+$HISTORIC" -exec rm {} \;
 
     info "${show_name} - End"
 done
