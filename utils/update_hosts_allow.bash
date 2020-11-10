@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 set -e
-set -x
 
 usage() {
   echo "./update_allow_hosts.bash: "
@@ -45,14 +44,14 @@ done
 set -- "${POSITIONAL[@]}"
 
 if [[ ! -f ${HOST_ALLOW_FILE_PATH} ]]; then
-    error "${HOST_ALLOW_FILE_PATH} no such file";
+    echo "${HOST_ALLOW_FILE_PATH} no such file";
     exit 1;
 fi
 
 ip="$(get_ip_from_hostname $HOSTNAME)"
 
-if [[ -e "$ip" ]]; then
-    error "Can not find ip address from hostname $HOSTNAME";
+if  [[ -z "$ip" ]]; then
+    echo "Can not find ip address from hostname $HOSTNAME";
     exit 1;
 fi
 
