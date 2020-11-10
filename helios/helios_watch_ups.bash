@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source "${BASH_SOURCE%/*}/logger.bash";
+
 set -e
 
 usage() {
@@ -31,9 +33,12 @@ set -- "${POSITIONAL[@]}"
 
 ON_BATTERY=$(cat /sys/class/power_supply/gpio-charger/online)
 
-if [[ ${ON_BATTERY} -eq "1" ]]; then
+if [[ ${ON_BATTERY} -eq "0" ]]; then
     CURRENT_LEVEL=$(scale=0;echo "`cat /sys/bus/iio/devices/iio:device0/in_voltage2_raw` * `cat /sys/bus/iio/devices/iio:device0/in_voltage_scale`/1" | bc)
+    info "Helios is on battery. Current power level $CURRENT_LEVEL"
+
     if [[ "${CURRENT_LEVEL}" -lt ${MIN_BATTERY_LEVEL} ]]; then
+        info "Shutdown now !"
         poweroff
     fi
 fi
