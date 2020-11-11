@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# https://wiki.kobol.io/helios64/ups
+
 set -e
 
 usage() {
@@ -39,7 +41,7 @@ ON_BATTERY=$(cat /sys/class/power_supply/gpio-charger/online)
 CHARGING_STATUS=$(cat /sys/class/power_supply/gpio-charger/status)
 CURRENT_LEVEL=$(scale=0;echo "`cat /sys/bus/iio/devices/iio:device0/in_voltage2_raw` * `cat /sys/bus/iio/devices/iio:device0/in_voltage_scale`/1" | bc)
 
-if [[ ${CHARGING_STATUS} == "Charging" ]]; then
+if [[ ${CHARGING_STATUS} == "Charging" ]] && [[ ${ON_BATTERY} -eq "1" ]]; then
   log "Helios is charging. Current power level $CURRENT_LEVEL"
 else
   if [[ ${ON_BATTERY} -eq "0" ]]; then
