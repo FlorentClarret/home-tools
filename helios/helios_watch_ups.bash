@@ -36,15 +36,20 @@ done
 set -- "${POSITIONAL[@]}"
 
 ON_BATTERY=$(cat /sys/class/power_supply/gpio-charger/online)
+CHARGING_STATUS=$(cat /sys/class/power_supply/gpio-charger/status)
+CURRENT_LEVEL=$(scale=0;echo "`cat /sys/bus/iio/devices/iio:device0/in_voltage2_raw` * `cat /sys/bus/iio/devices/iio:device0/in_voltage_scale`/1" | bc)
 
-if [[ ${ON_BATTERY} -eq "0" ]]; then
-    CURRENT_LEVEL=$(scale=0;echo "`cat /sys/bus/iio/devices/iio:device0/in_voltage2_raw` * `cat /sys/bus/iio/devices/iio:device0/in_voltage_scale`/1" | bc)
-    log "Helios is on battery. Current power level $CURRENT_LEVEL"
+if [[ ${CHARGING_STATUS} == "Charging" ]]; then
+  log "Helios is charging. Current power level $CURRENT_LEVEL"
+else
+  if [[ ${ON_BATTERY} -eq "0" ]]; then
+      log "Helios is on battery. Current power level $CURRENT_LEVEL"
 
-    if [[ "${CURRENT_LEVEL}" -lt ${MIN_BATTERY_LEVEL} ]]; then
-        log "Shutdown now !"
-        poweroff
-    fi
+      if [[ "${CURRENT_LEVEL}" -lt ${MIN_BATTERY_LEVEL} ]]; then
+          log "Shutdown now !"
+          poweroff
+      fi
+  fi
 fi
 
 exit 0
