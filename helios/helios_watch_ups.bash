@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-source "${BASH_SOURCE%/*}/logger.bash";
-
 set -e
 
 usage() {
@@ -12,6 +10,12 @@ usage() {
   echo -e "\t-l|--level : (optionnal) The level from which you want to stop the ost"
   echo -e "\t-h|--help : (optionnal) Show this usage"
   echo
+}
+
+log() {
+    MESSAGE="$1";
+    NOW=$(date +%Y-%m-%d/%H:%M:%S,%3N);
+    echo "${NOW} - ${MESSAGE}";
 }
 
 # ====== Main ======
@@ -35,10 +39,10 @@ ON_BATTERY=$(cat /sys/class/power_supply/gpio-charger/online)
 
 if [[ ${ON_BATTERY} -eq "0" ]]; then
     CURRENT_LEVEL=$(scale=0;echo "`cat /sys/bus/iio/devices/iio:device0/in_voltage2_raw` * `cat /sys/bus/iio/devices/iio:device0/in_voltage_scale`/1" | bc)
-    info "Helios is on battery. Current power level $CURRENT_LEVEL"
+    log "Helios is on battery. Current power level $CURRENT_LEVEL"
 
     if [[ "${CURRENT_LEVEL}" -lt ${MIN_BATTERY_LEVEL} ]]; then
-        info "Shutdown now !"
+        log "Shutdown now !"
         poweroff
     fi
 fi
