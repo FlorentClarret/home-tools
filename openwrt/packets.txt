@@ -1,0 +1,2 @@
+luci-ssl
+luci-app-upnp
