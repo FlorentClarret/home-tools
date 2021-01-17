@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Requirements : bash, curl
+
+# In my crontab : ./upgrade-all-packages.sh -y >> /var/log/auto-update/auto-update.$(date '+%Y-%m-%d').log 2>&1
+
 set -e
 
 source /etc/openwrt_release
@@ -10,8 +14,22 @@ usage() {
   echo
   echo "Parameters: "
   echo -e "\t-y|--yes : (optionnal) Do no ask if we should upgrade the packages"
+  echo -e "\t-d|--discord : (optionnal) Discord webhook url"
   echo -e "\t-h|--help : (optionnal) Show this usage"
   echo
+}
+
+notify_discord() {
+  URL="$1"
+  MESSAGE="$2"
+
+  if [ "$URL" != "NO" ]; then
+    curl -X POST \
+      -s \
+      -H "Content-Type: application/json" \
+      --data '{"username": "Router", "content": "'"$MESSAGE"'"}' \
+      $URL
+  fi
 }
 
 log() {
@@ -29,6 +47,7 @@ log_package_update() {
 }
 
 check_openwrt_version() {
+  discord_url="$1"
   log "Checking if a new openwrt version is available..."
 
   rm -f /tmp/releases.html
@@ -38,6 +57,7 @@ check_openwrt_version() {
 
   if [ $LATEST_RELEASE != $DISTRIB_RELEASE ]; then
     log "/!\ New version available: $LATEST_RELEASE /!\\"
+    notify_discord $discord_url "New version available: [$LATEST_RELEASE]. Current version: [$DISTRIB_RELEASE]"
   else
     log "Your version is already up to date"
   fi
@@ -53,6 +73,7 @@ update_package_list() {
 
 upgrade_all_packages() {
   force_update="$1"
+  discord_url="$2"
   if [ `opkg list-upgradable | cut -d " " -f1 | wc -l` -gt 0 ]; then
     log "Available updates:"
 
@@ -64,6 +85,7 @@ upgrade_all_packages() {
       current_version=$(echo $line | cut -d" " -f3)
       new_version=$(echo $line | cut -d" " -f5)
       log_package_update $package $current_version $new_version
+      notify_discord $discord_url "Update available for [$package]. Current version: [$current_version]. New version: [$new_version]"
     done
 
     valid=0
@@ -103,10 +125,13 @@ update_installed_packages() {
 # ====== Main ======
 
 FORCE_UPDATE="NO"
+DISCORD_URL="NO"
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
     case ${1} in
+        -d|--discord)
+            DISCORD_URL=${2}; shift; shift;;
         -y|--yes)
             FORCE_UPDATE="YES"; shift;;
         -h|--help)
@@ -117,14 +142,18 @@ while [[ $# -gt 0 ]]; do
 done
 set -- "${POSITIONAL[@]}"
 
+notify_discord $DISCORD_URL "Running the upgrade packages script."
+
 log "Current version: $DISTRIB_ID $DISTRIB_RELEASE"
 
-check_openwrt_version
+check_openwrt_version $DISCORD_URL
 
 update_package_list
 
-upgrade_all_packages $FORCE_UPDATE
+upgrade_all_packages $FORCE_UPDATE $DISCORD_URL
 
 update_installed_packages
 
 sync
+
+notify_discord $DISCORD_URL "Ending the upgrade packages script."
